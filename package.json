@@ -1,6 +1,6 @@
 {
   "name": "@digitalwalletcorp/promise-concurrent-executor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This is a library for controlling promise async call",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,7 +10,7 @@
     "version:minor": "npm version minor",
     "version:major": "npm version major",
     "pack": "rm -rf dest && mkdir -p dest && npm pack --pack-destination=dest",
-    "publish": "bash ../bin/publish.sh",
+    "publish:npm": "bash ../bin/publish.sh",
     "test:unit": "NODE_OPTIONS=--max-old-space-size=2048 npx jest --runInBand --logHeapUsage --detectOpenHandles --forceExit --errorOnDeprecated --coverage --silent --unhandled-rejections=strict"
   },
   "keywords": [
