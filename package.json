@@ -1,6 +1,6 @@
 {
   "name": "@digitalwalletcorp/promise-concurrent-executor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a library for controlling promise async call",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,6 +20,14 @@
   ],
   "author": "satoshi kotaki",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+[https://github.com/digitalwalletcorp/promise-concurrent-executor.git](https://github.com/digitalwalletcorp/promise-concurrent-executor.git)"
+  },
+  "homepage": "[https://github.com/digitalwalletcorp/promise-concurrent-executor#readme](https://github.com/digitalwalletcorp/promise-concurrent-executor#readme)",
+  "bugs": {
+    "url": "[https://github.com/digitalwalletcorp/promise-concurrent-executor/issues](https://github.com/digitalwalletcorp/promise-concurrent-executor/issues)"
+  },
   "files": [
     "lib/**/*"
   ],
