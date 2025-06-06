@@ -29,8 +29,6 @@ export class PromiseConcurrentExecutor {
   private runningCount = 0;
   /** 実行中フラグ */
   private isRunning = false;
-  /** キューの実行待ち先頭インデックス */
-  private queueIndex = 0;
 
   /**
    * コンストラクタ
@@ -50,7 +48,6 @@ export class PromiseConcurrentExecutor {
   private init() {
     this.queue.length = 0;
     this.isRunning = false;
-    this.queueIndex = 0;
     this.runningCount = 0; // これは明示的に実行しなくても処理完了時には0になる
   }
 
@@ -241,7 +238,6 @@ export class PromiseConcurrentExecutor {
       const intervalId = setInterval(() => {
         // if文の中で条件判定とカウンターのインクリメントを行うことで、想定外の流量が発生することを回避
         if (this.runningCount < this.concurrency // 流量制限に引っかからない
-            && this.queueIndex++ != null // 条件を満たしたら待ち行列の先頭インデックスをインクリメント
             && this.runningCount++ != null // 条件を満たしたら実行数をインクリメント
         ) {
           resolve();
