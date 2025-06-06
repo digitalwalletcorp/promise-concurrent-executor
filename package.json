@@ -1,6 +1,6 @@
 {
   "name": "@digitalwalletcorp/promise-concurrent-executor",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "This is a library for controlling promise async call",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,7 +29,8 @@
     "url": "https://github.com/digitalwalletcorp/promise-concurrent-executor/issues"
   },
   "files": [
-    "lib/**/*"
+    "lib/**/*",
+    "src/**/*"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.14",

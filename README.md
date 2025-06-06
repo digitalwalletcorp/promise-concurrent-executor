@@ -257,3 +257,16 @@ Returns the number of functions currently in the queue.
 # License
 
 This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/licenses/MIT) file for details.
+
+## Advanced Usage & Examples
+
+This README covers the basic setup and primary usage of the library. For more advanced use cases and a comprehensive look at all features, the test suite serves as practical and up-to-date documentation.
+
+We recommend Browse the test files to discover:
+- How to handle various edge cases.
+- Examples of advanced configuration options.
+- Practical implementation patterns.
+
+You can find the test case in the `/test/specs` directory of our GitHub repository.
+
+- **[Explore our Test Suite for Advanced Examples](https://github.com/digitalwalletcorp/promise-concurrent-executor/tree/main/test/specs)**
