@@ -1,6 +1,6 @@
 {
-  "name": "@digitalwallet/promise-concurrent-executor",
-  "version": "1.0.0",
+  "name": "@digitalwalletcorp/promise-concurrent-executor",
+  "version": "1.0.1",
   "description": "This is a library for controlling promise async call",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "version:patch": "npm version patch",
     "version:minor": "npm version minor",
     "version:major": "npm version major",
-    "pack": "mkdir -p dest && npm pack --pack-destination=dest",
+    "pack": "rm -rf dest && mkdir -p dest && npm pack --pack-destination=dest",
     "publish": "bash ../bin/publish.sh",
     "test:unit": "NODE_OPTIONS=--max-old-space-size=2048 npx jest --runInBand --logHeapUsage --detectOpenHandles --forceExit --errorOnDeprecated --coverage --silent --unhandled-rejections=strict"
   },
@@ -20,6 +20,14 @@
   ],
   "author": "satoshi kotaki",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+[https://github.com/digitalwalletcorp/promise-concurrent-executor.git](https://github.com/digitalwalletcorp/promise-concurrent-executor.git)"
+  },
+  "homepage": "[https://github.com/digitalwalletcorp/promise-concurrent-executor#readme](https://github.com/digitalwalletcorp/promise-concurrent-executor#readme)",
+  "bugs": {
+    "url": "[https://github.com/digitalwalletcorp/promise-concurrent-executor/issues](https://github.com/digitalwalletcorp/promise-concurrent-executor/issues)"
+  },
   "files": [
     "lib/**/*"
   ],

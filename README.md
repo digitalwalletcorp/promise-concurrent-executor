@@ -11,9 +11,9 @@ A JavaScript library to control Promise concurrency. It processes asynchronous t
 # Installation
 
 ```bash
-npm install @digitalwallet/promise-concurrent-executor
+npm install @digitalwalletcorp/promise-concurrent-executor
 # or
-yarn add @digitalwallet/promise-concurrent-executor
+yarn add @digitalwalletcorp/promise-concurrent-executor
 ```
 
 # Usage
@@ -32,7 +32,7 @@ Both methods execute all queued Promise functions, but they handle rejected Prom
 This example shows how `executeAll` behaves when one of the tasks rejects, causing the entire execution to fail. The generic type `T` here can be an array or tuple type, reflecting the expected order of results if all promises fulfill.
 
 ```typescript
-import { PromiseConcurrentExecutor } from '@digitalwallet/promise-concurrent-executor';
+import { PromiseConcurrentExecutor } from '@digitalwalletcorp/promise-concurrent-executor';
 
 // A mock async function for demonstration
 const someHeavyFunction = (id: number, value: any): Promise<any> =>
@@ -111,7 +111,7 @@ ExecuteAll rejected because one or more promises failed: Second task (failure)
 This example demonstrates how to use `executeAllSettled` to run tasks concurrently and get all results, including those from rejected Promises. Notice how the generic type `T` applies to the individual resolved values, and the method always returns an array of `PromiseSettledResult`.
 
 ```typescript
-import { PromiseConcurrentExecutor } from '@digitalwallet/promise-concurrent-executor';
+import { PromiseConcurrentExecutor } from '@digitalwalletcorp/promise-concurrent-executor';
 
 // A mock async function for demonstration
 const someHeavyFunction = (id: number, value: any): Promise<any> =>
@@ -257,4 +257,3 @@ Returns the number of functions currently in the queue.
 # License
 
 This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/licenses/MIT) file for details.
-
