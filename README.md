@@ -1,5 +1,7 @@
 # Promise Concurrent Executor
 
+[![NPM Version](https://img.shields.io/npm/v/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://www.npmjs.com/package/@digitalwalletcorp/promise-concurrent-executor) [![License](https://img.shields.io/npm/l/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://opensource.org/licenses/MIT) [![Build Status](https://img.shields.io/github/actions/workflow/status/digitalwalletcorp/promise-concurrent-executor/ci.yml?branch=main)](https://github.com/digitalwalletcorp/promise-concurrent-executor/actions) [![Test Coverage](https://img.shields.io/codecov/c/github/digitalwalletcorp/promise-concurrent-executor.svg)](https://codecov.io/gh/digitalwalletcorp/promise-concurrent-executor)
+
 A JavaScript library to control Promise concurrency. It processes asynchronous tasks up to a specified limit, offering queuing and automated execution. Ideal for stabilizing async operations, preventing excessive resource consumption, and improving application performance by managing the flow of API calls or data processing.
 
 # Features
@@ -197,7 +199,7 @@ Error Handling Result B: FULFILLED - Task 4 succeeded
 
 # API Reference
 
-#### new PromiseConcurrentExecutor(concurrency?: number, options?: PromiseConcurrentExecutorOption)
+##### `new PromiseConcurrentExecutor(concurrency?: number, options?: PromiseConcurrentExecutorOption)`
 
 * `concurrency` (optional, default: `1`): The maximum number of Promises to execute in parallel.
 * `options` (optional): An object with configuration options.

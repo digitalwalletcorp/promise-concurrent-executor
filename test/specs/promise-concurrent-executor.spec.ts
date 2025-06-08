@@ -21,6 +21,33 @@ const waitFunction = async (type: WiatFunctionType, msec: number): Promise<numbe
 };
 
 describe('@/promise-concurrent-executor.ts', () => {
+  describe('getConcurrency', () => {
+    it('getConcurrency.01', () => {
+      const executor = new PromiseConcurrentExecutor(5);
+      const result = executor.getConcurrency();
+      expect(result).toBe(5);
+    });
+  });
+  describe('setConcurrency', () => {
+    it('setConcurrency.01', () => {
+      const executor = new PromiseConcurrentExecutor(5);
+      executor.setConcurrency(3);
+      const result = executor.getConcurrency();
+      expect(result).toBe(3);
+    });
+  });
+  describe('size', () => {
+    it('size.01', async () => {
+      const executor = new PromiseConcurrentExecutor();
+      executor.addAll([
+        async () => waitFunction('resolve', 100),
+        async () => waitFunction('resolve', 100)
+      ]);
+      expect(executor.size()).toBe(2);
+      await executor.executeAll();
+      expect(executor.size()).toBe(0);
+    });
+  });
   describe('executeAllSettled', () => {
     it('executeAllSettled.01', async () => {
       // 同時実行数未指定 = 1
