@@ -14,8 +14,8 @@ export interface PromiseConcurrentExecutorOption {
  * 指定した並列実行数を最大としてPromiseを実行する。
  * 実行中の処理が１つ終わるとスタックに積まれている処理を１つ実行に移す。
  * このクラスに処理を追加する場合、Promiseでラップして引き渡す。
- * executeSync() / executeAll() を呼ぶことで処理を開始し、完了後の結果を受け取る。
- * executeSync() / executeAll() を呼び出すまでは関数が実行されない。
+ * executeAll() / executeAllSettled() を呼ぶことで処理を開始し、完了後の結果を受け取る。
+ * executeAll() / executeAllSettled() を呼び出すまでは関数が実行されない。
  */
 export class PromiseConcurrentExecutor {
 
@@ -227,7 +227,6 @@ export class PromiseConcurrentExecutor {
   /**
    * 実行ができる状態になるまで待機する
    * ・流量制限にひっかからない
-   * ・自身が待ち行列の先頭にいる(options.fairがtrueの場合)
    *
    * @param {PromiseConcurrentExecutorOption} [options]
    * @returns {{Promise<void>}}
@@ -247,4 +246,3 @@ export class PromiseConcurrentExecutor {
     });
   }
 }
-
