@@ -1,16 +1,23 @@
 # Promise Concurrent Executor
 
-[![NPM Version](https://img.shields.io/npm/v/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://www.npmjs.com/package/@digitalwalletcorp/promise-concurrent-executor) [![License](https://img.shields.io/npm/l/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://opensource.org/licenses/MIT) [![Build Status](https://img.shields.io/github/actions/workflow/status/digitalwalletcorp/promise-concurrent-executor/ci.yml?branch=main)](https://github.com/digitalwalletcorp/promise-concurrent-executor/actions) [![Test Coverage](https://img.shields.io/codecov/c/github/digitalwalletcorp/promise-concurrent-executor.svg)](https://codecov.io/gh/digitalwalletcorp/promise-concurrent-executor)
+[![NPM Version](https://img.shields.io/npm/v/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://www.npmjs.com/package/@digitalwalletcorp/promise-concurrent-executor) [![License](https://img.shields.io/npm/l/%40digitalwalletcorp%2Fpromise-concurrent-executor)](https://opensource.org/licenses/MIT) ![Environment](https://img.shields.io/badge/environment-Node.js%20%7C%20Browser-blue) [![Build Status](https://img.shields.io/github/actions/workflow/status/digitalwalletcorp/promise-concurrent-executor/ci.yml?branch=main)](https://github.com/digitalwalletcorp/promise-concurrent-executor/actions) [![Test Coverage](https://img.shields.io/codecov/c/github/digitalwalletcorp/promise-concurrent-executor.svg)](https://codecov.io/gh/digitalwalletcorp/promise-concurrent-executor)
 
 A JavaScript library to control Promise concurrency. It processes asynchronous tasks up to a specified limit, offering queuing and automated execution. Ideal for stabilizing async operations, preventing excessive resource consumption, and improving application performance by managing the flow of API calls or data processing.
 
-# Features
+## ✨ Features
 
 * Control Promise Async Call: Manage the maximum number of asynchronous operations running simultaneously.
 * Configurable Concurrency: Easily set how many processes can run at the same time.
 * Dynamic Task Addition: Add new Promise functions to the queue even while execution is in progress (though add and addWithAutoExecute have limitations for isRunning state).
 
-# Installation
+## ✅ Compatibility
+
+This library is Isomorphic / Universal, meaning it is designed to run in multiple JavaScript environments. It has no dependencies on platform-specific APIs.
+
+- ✅ **Node.js**: Fully supported on all modern Node.js versions.
+- ✅ **Browsers**: Fully supported on all modern browsers that support ES2020 (Promises, async/await).
+
+## 📦 Installation
 
 ```bash
 npm install @digitalwalletcorp/promise-concurrent-executor
@@ -18,11 +25,11 @@ npm install @digitalwalletcorp/promise-concurrent-executor
 yarn add @digitalwalletcorp/promise-concurrent-executor
 ```
 
-# Usage
+## 📖 Usage
 
 The `PromiseConcurrentExecutor` helps you manage a queue of asynchronous tasks, ensuring that only a specified number run in parallel. You can add tasks to the queue and then trigger their execution using `executeAll` or `executeAllSettled`.
 
-### `executeAll` vs. `executeAllSettled`
+### ⚖️ `executeAll` vs. `executeAllSettled`
 
 Both methods execute all queued Promise functions, but they handle rejected Promises differently:
 
@@ -197,7 +204,7 @@ Error Handling Result B: FULFILLED - Task 4 succeeded
 */
 ```
 
-# API Reference
+## 📚 API Reference
 
 ##### `new PromiseConcurrentExecutor(concurrency?: number, options?: PromiseConcurrentExecutorOption)`
 
@@ -256,11 +263,11 @@ Sets a new maximum parallel execution limit.
 
 Returns the number of functions currently in the queue.
 
-# License
+## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/licenses/MIT) file for details.
 
-## Advanced Usage & Examples
+## 🎓 Advanced Usage & Examples
 
 This README covers the basic setup and primary usage of the library. For more advanced use cases and a comprehensive look at all features, the test suite serves as practical and up-to-date documentation.
 
