@@ -38,169 +38,155 @@ Both methods execute all queued Promise functions, but they handle rejected Prom
 
 #### `executeAll` Example
 
-This example shows how `executeAll` behaves when one of the tasks rejects, causing the entire execution to fail. The generic type `T` here can be an array or tuple type, reflecting the expected order of results if all promises fulfill.
+**Core Concept:** Managing a Queue of Tasks
+This example demonstrates the core functionality of the library. We will add 10 asynchronous tasks to the `executor`, which is configured with a concurrency limit of 3. The `executor` runs a maximum of 3 tasks in parallel. As one task finishes, the next one from the queue is automatically started, ensuring the concurrency limit is respected until all 10 tasks are complete.
 
 ```typescript
 import { PromiseConcurrentExecutor } from '@digitalwalletcorp/promise-concurrent-executor';
 
-// A mock async function for demonstration
-const someHeavyFunction = (id: number, value: any): Promise<any> =>
-  new Promise(resolve => setTimeout(() => {
-    console.log(`Processing task ${id}`);
-    resolve(value);
-  }, 100));
+// A mock async function that simulates a task with a variable delay
+const asyncTask = (id: number): Promise<string> => {
+  return new Promise(resolve => {
+    const delay = Math.floor(Math.random() * 500) + 200; // Random delay between 200ms and 700ms
+    console.log(` -> Task ${id} started (delay: ${delay}ms)`);
+    setTimeout(() => {
+      console.log(` <- Task ${id} finished.`);
+      resolve(`Result from task ${id}`);
+    }, delay);
+  });
+};
 
+// 1. Initialize with a concurrency of 3
+const executor = new PromiseConcurrentExecutor(3);
 
-// Example 1: Basic usage with a consistent return type
-const executor1 = new PromiseConcurrentExecutor(3); // Allow 3 concurrent processes.
-executor1.add(async () => someHeavyFunction(100, 'aaa'));
-executor1.add(async () => someHeavyFunction(101, 'bbb'));
-executor1.add(async () => someHeavyFunction(102, 'ccc'));
-
-console.log('Starting executeAll (Basic)...');
-const results1 = await executor1.executeAll<string[]>(); // Starts execution and waits for all to complete. Errors will immediately terminate.
-console.log('Results (Basic):', results1);
-// Expected results: ['aaa', 'bbb', 'ccc']
-
-
-// Example 2: Handling different return types using a tuple
-const executor2 = new PromiseConcurrentExecutor(3); // Allow 3 concurrent processes.
-executor2.add(async () => someHeavyFunction(200, 'string_result'));
-executor2.add(async () => someHeavyFunction(201, 123));
-executor2.add(async () => someHeavyFunction(202, { key: 'value', num: 456 }));
-
-console.log('\nStarting executeAll (Mixed Types)...');
-const results2 = await executor2.executeAll<[string, number, { key: string; num: number }]>(); // Tuple type allows defining each return type
-console.log('Results (Mixed Types):', results2);
-// Expected results: ['string_result', 123, { key: 'value', num: 456 }]
-
-
-// Example 3: Error handling with executeAll
-const executor3 = new PromiseConcurrentExecutor(2); // Allow 2 concurrent processes.
-executor3.add(async () => new Promise(resolve => setTimeout(() => {
-  resolve('First task (success)');
-}, 100)));
-
-executor3.add(async () => new Promise((_, reject) => setTimeout(() => {
-  reject(new Error('Second task (failure)')); // This task will reject
-}, 50))); // Shorter delay to ensure it rejects earlier
-
-executor3.add(async () => new Promise(resolve => setTimeout(() => {
-  resolve('Third task (success)');
-}, 150)));
-
-try {
-  console.log('\nStarting executeAll (Error Handling)...');
-  const results3 = await executor3.executeAll<string[]>();
-  console.log('All tasks fulfilled:', results3); // This line will NOT be reached if any promise rejects
-} catch (error: any) {
-  console.error('ExecuteAll rejected because one or more promises failed:', error.message);
+// 2. Add 10 tasks to the queue
+console.log('Adding 10 tasks to the queue...');
+for (let i = 1; i <= 10; i++) {
+  executor.add(() => asyncTask(i));
 }
 
-/* Expected Output (order may vary due to concurrency for console.log from someHeavyFunction):
-Starting executeAll (Basic)...
-Processing task 100
-Processing task 101
-Processing task 102
-Results (Basic): [ 'aaa', 'bbb', 'ccc' ]
+// 3. Start execution and wait for all tasks to complete
+console.log(`Starting execution with concurrency=3. Queue size=${executor.size()}`);
+const results = await executor.executeAll<string[]>();
 
-Starting executeAll (Mixed Types)...
-Processing task 200
-Processing task 201
-Processing task 202
-Results (Mixed Types): [ 'string_result', 123, { key: 'value', num: 456 } ]
+console.log('\n✅ All tasks completed successfully!');
+console.log('Results:', results);
 
-Starting executeAll (Error Handling)...
-ExecuteAll rejected because one or more promises failed: Second task (failure)
+/* Expected Output (the exact order of start/finish logs will vary):
+Adding 10 tasks to the queue...
+Starting execution with concurrency=3. Queue size=10
+ -> Task 1 started (delay: ...ms)
+ -> Task 2 started (delay: ...ms)
+ -> Task 3 started (delay: ...ms)
+ // -- At this point, 3 tasks are running. Task 4 must wait.
+ <- Task 2 finished.
+ -> Task 4 started (delay: ...ms) // -- Task 2 finished, so Task 4 begins.
+ <- Task 1 finished.
+ -> Task 5 started (delay: ...ms) // -- And so on...
+ ...
+ <- Task 10 finished.
+
+✅ All tasks completed successfully!
+Results: [
+  'Result from task 1',
+  'Result from task 2',
+  'Result from task 3',
+  'Result from task 4',
+  'Result from task 5',
+  'Result from task 6',
+  'Result from task 7',
+  'Result from task 8',
+  'Result from task 9',
+  'Result from task 10'
+]
 */
+```
+
+#### Additional `executeAll` Examples
+
+The following examples demonstrate other key features of `executeAll`, such as handling mixed return types and, importantly, its "fail-fast" error handling behavior where execution stops as soon as a task fails.
+
+```typescript
+// Example: Handling different return types using a tuple
+const executor2 = new PromiseConcurrentExecutor(2);
+executor2.add(async () => 'string_result');
+executor2.add(async () => 123);
+const results2 = await executor2.executeAll<[string, number]>();
+console.log('Mixed type results:', results2); // -> ['string_result', 123]
+
+// Example: Error handling
+const executor3 = new PromiseConcurrentExecutor(2);
+executor3.add(async () => 'Success');
+executor3.add(async () => { throw new Error('Failure'); });
+try {
+  await executor3.executeAll();
+} catch (error: any) {
+  // executeAll rejects as soon as one promise fails.
+  console.error('Execution failed:', error.message); // -> Execution failed: Failure
+}
 ```
 
 #### `executeAllSettled` Example
 
-This example demonstrates how to use `executeAllSettled` to run tasks concurrently and get all results, including those from rejected Promises. Notice how the generic type `T` applies to the individual resolved values, and the method always returns an array of `PromiseSettledResult`.
+In contrast to the "fail-fast" behavior of `executeAll`, `executeAllSettled` is designed with a "run-to-completion" approach. It guarantees that every task in the queue will be executed, regardless of whether some of them fail.
+
+The `executeAllSettled` promise itself never rejects due to task failures. Instead, it always resolves with an array of result objects, each detailing the outcome (`'fulfilled'` or `'rejected'`) of a task. This allows you to safely inspect every result, making it ideal for scenarios where comprehensive processing and reliable error logging are critical.
+
+The following example demonstrates this by running a mix of succeeding and failing tasks.
 
 ```typescript
 import { PromiseConcurrentExecutor } from '@digitalwalletcorp/promise-concurrent-executor';
 
-// A mock async function for demonstration
-const someHeavyFunction = (id: number, value: any): Promise<any> =>
-  new Promise(resolve => setTimeout(() => {
-    console.log(`Processing task ${id}`);
-    resolve(value);
-  }, 100));
+// 1. Initialize with a concurrency of 3
+const executor = new PromiseConcurrentExecutor(3);
 
-
-// Example 1: Basic usage with a consistent return type
-const executor1 = new PromiseConcurrentExecutor(3); // Allow 3 concurrent processes.
-executor1.add(async () => someHeavyFunction(100, 'aaa'));
-executor1.add(async () => someHeavyFunction(101, 'bbb'));
-executor1.add(async () => someHeavyFunction(102, 'ccc'));
-
-console.log('Starting executeAllSettled (Basic)...');
-const results1 = await executor1.executeAllSettled<string>(); // Starts execution of all functions and waits for completion.
-results1.forEach((result, index) => {
-  if (result.status === 'fulfilled') {
-    console.log(`Basic Result ${index}: FULFILLED - ${result.value}`);
-  } else {
-    console.error(`Basic Result ${index}: REJECTED - ${result.reason.message}`);
-  }
-});
-// Expected results:
-// Basic Result X: FULFILLED - aaa
-// Basic Result Y: FULFILLED - bbb
-// Basic Result Z: FULFILLED - ccc
-
-
-// Example 2: Handling fulfilled and rejected promises
-const executor2 = new PromiseConcurrentExecutor(3); // Allow 3 concurrent processes.
-
-for (let i = 0; i < 5; i++) {
-  executor2.add(async () => {
-    return new Promise((resolve, reject) => {
-      const delay = Math.random() * 200 + 50;
-      setTimeout(() => {
-        if (i % 2 === 0) { // Simulate some tasks succeeding, some failing
-          resolve(`Task ${i} succeeded`);
-        } else {
-          reject(new Error(`Task ${i} failed`));
-        }
-      }, delay);
-    });
-  });
+// 2. Add 7 tasks that may succeed or fail
+console.log('Adding 7 tasks (odd # will succeed, even # will fail)...');
+for (let i = 1; i <= 7; i++) {
+  executor.add(() => new Promise((resolve, reject) => {
+    const delay = Math.random() * 200 + 50;
+    console.log(` -> Task ${i} processing...`);
+    setTimeout(() => {
+      if (i % 2 !== 0) { // Succeed if 'i' is odd
+        resolve(`Task ${i} Succeeded`);
+      } else { // Fail if 'i' is even
+        reject(new Error(`Task ${i} Failed`));
+      }
+    }, delay);
+  }));
 }
 
-console.log('\nStarting executeAllSettled (With Errors)...');
-// T is a single type, e.g., 'string' for resolved values.
-const results2 = await executor2.executeAllSettled<string>();
+// 3. Execute and wait for all tasks to settle
+console.log('\nStarting executeAllSettled...');
+// The generic type <string> refers to the *fulfilled* value type.
+const settledResults = await executor.executeAllSettled<string>();
 
-results2.forEach((result, index) => {
+console.log('\n✅ All tasks have settled.');
+settledResults.forEach((result, index) => {
   if (result.status === 'fulfilled') {
-    console.log(`Error Handling Result ${index}: FULFILLED - ${result.value}`);
+    console.log(`  Task ${index + 1}: FULFILLED, Value: "${result.value}"`);
   } else {
-    console.error(`Error Handling Result ${index}: REJECTED - ${result.reason.message}`);
+    // result.reason is the error that was thrown
+    console.error(`  Task ${index + 1}: REJECTED, Reason: ${result.reason.message}`);
   }
 });
 
-/* Expected Output (order may vary due to concurrency):
-Starting executeAllSettled (Basic)...
-Processing task 100
-Processing task 101
-Processing task 102
-Basic Result X: FULFILLED - aaa
-Basic Result Y: FULFILLED - bbb
-Basic Result Z: FULFILLED - ccc
-
-Starting executeAllSettled (With Errors)...
-Processing task 0
-Processing task 1
-Processing task 2
-Processing task 3
-Processing task 4
-Error Handling Result X: FULFILLED - Task 0 succeeded
-Error Handling Result Y: REJECTED - Task 1 failed
-Error Handling Result Z: FULFILLED - Task 2 succeeded
-Error Handling Result A: REJECTED - Task 3 failed
-Error Handling Result B: FULFILLED - Task 4 succeeded
+/* Expected Output (order of processing logs will vary):
+Adding 7 tasks...
+...
+Starting executeAllSettled...
+ -> Task 1 processing...
+ -> Task 2 processing...
+ -> Task 3 processing...
+...
+✅ All tasks have settled.
+  Task 1: FULFILLED, Value: "Task 1 Succeeded"
+  Task 2: REJECTED, Reason: Task 2 Failed
+  Task 3: FULFILLED, Value: "Task 3 Succeeded"
+  Task 4: REJECTED, Reason: Task 4 Failed
+  Task 5: FULFILLED, Value: "Task 5 Succeeded"
+  Task 6: REJECTED, Reason: Task 6 Failed
+  Task 7: FULFILLED, Value: "Task 7 Succeeded"
 */
 ```
 
