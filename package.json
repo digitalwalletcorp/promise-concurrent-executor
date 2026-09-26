@@ -1,14 +1,16 @@
 {
   "name": "@digitalwalletcorp/promise-concurrent-executor",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "This is a library for controlling promise async call",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
+    "install:dev": "rm -rf lib dest && find node_modules -mindepth 1 -delete && yarn install",
     "version:patch": "npm version patch",
     "version:minor": "npm version minor",
     "version:major": "npm version major",
+    "prepack": "rm -rf lib && npm run build",
     "pack": "rm -rf dest && mkdir -p dest && npm pack --pack-destination=dest",
     "publish:npm": "bash ../bin/publish.sh",
     "test:unit": "NODE_OPTIONS=--max-old-space-size=2048 npx jest --runInBand --logHeapUsage --detectOpenHandles --forceExit --errorOnDeprecated --coverage --silent --unhandled-rejections=strict"
@@ -24,7 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/digitalwalletcorp/promise-concurrent-executor.git"
   },
-  "homepage": "https://github.com/digitalwalletcorp/promise-concurrent-executor#readme",
+  "homepage": "https://github.com/digitalwalletcorp/promise-concurrent-executor",
   "bugs": {
     "url": "https://github.com/digitalwalletcorp/promise-concurrent-executor/issues"
   },
@@ -33,10 +35,10 @@
     "src/**/*"
   ],
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.3.4",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "6.0.3"
   }
 }
