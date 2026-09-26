@@ -4,20 +4,20 @@
 
 A JavaScript library to control Promise concurrency. It processes asynchronous tasks up to a specified limit, offering queuing and automated execution. Ideal for stabilizing async operations, preventing excessive resource consumption, and improving application performance by managing the flow of API calls or data processing.
 
-## ✨ Features
+#### ✨ Features
 
 * Control Promise Async Call: Manage the maximum number of asynchronous operations running simultaneously.
 * Configurable Concurrency: Easily set how many processes can run at the same time.
 * Dynamic Task Addition: Add new Promise functions to the queue even while execution is in progress (though add and addWithAutoExecute have limitations for isRunning state).
 
-## ✅ Compatibility
+#### ✅ Compatibility
 
 This library is Isomorphic / Universal, meaning it is designed to run in multiple JavaScript environments. It has no dependencies on platform-specific APIs.
 
 - ✅ **Node.js**: Fully supported on all modern Node.js versions.
 - ✅ **Browsers**: Fully supported on all modern browsers that support ES2020 (Promises, async/await).
 
-## 📦 Installation
+#### 📦 Installation
 
 ```bash
 npm install @digitalwalletcorp/promise-concurrent-executor
@@ -25,11 +25,11 @@ npm install @digitalwalletcorp/promise-concurrent-executor
 yarn add @digitalwalletcorp/promise-concurrent-executor
 ```
 
-## 📖 Usage
+#### 📖 Usage
 
 The `PromiseConcurrentExecutor` helps you manage a queue of asynchronous tasks, ensuring that only a specified number run in parallel. You can add tasks to the queue and then trigger their execution using `executeAll` or `executeAllSettled`.
 
-### ⚖️ `executeAll` vs. `executeAllSettled`
+#### ⚖️ `executeAll` vs. `executeAllSettled`
 
 Both methods execute all queued Promise functions, but they handle rejected Promises differently:
 
@@ -190,7 +190,53 @@ Starting executeAllSettled...
 */
 ```
 
-## 📚 API Reference
+⚠️ **Important: Capturing Variables in Loops (Closure Caveats)**
+When adding tasks to the executor inside a loop, especially with `for await...of` or when processing streams, you must be careful about how variables are captured by the task's closure.
+
+**The Problem: Variable Reference**
+In some environments or with certain streaming libraries, a variable declared within a `for await` loop might be reused or its reference might change before the `executor` actually runs the task. This can lead to all tasks processing the same (last) item or accessing unexpected data.
+
+**The Solution: Immediate Invoked Function Expression (IIFE)**
+To ensure each task captures the **current value** of the variable at the moment it's added to the queue, wrap the `add` method in an IIFE or create a localized constant.
+
+```typescript
+import { PromiseConcurrentExecutor } from '@digitalwalletcorp/promise-concurrent-executor';
+
+const executor = new PromiseConcurrentExecutor(10);
+
+// ❌ Risk: Potential scoping issues in complex async streams
+for await (const line of readLines(fileStream)) {
+  const data = JSON.parse(line);
+  executor.add(async () => {
+    // By the time this runs, 'data' might refer to a different line
+    await process(data);
+  });
+}
+
+// ✅ Safe: Use an IIFE to "freeze" the variable for each task
+for await (const line of readLines(fileStream)) {
+  ((data) => {
+    executor.add(async () => {
+      await process(data);
+    });
+  })(JSON.parse(line));
+}
+
+// ✅ Also Safe: Localized constant in standard for...of loops
+// Redundant but safer as it ensures all data is fixed in memory before processing.
+const array: any[] = [];
+for await (const line of readLines(fileStream)) {
+  array.push(JSON.parse(line));
+}
+
+for (const data of array) {
+  executor.add(async () => {
+    await process(data);
+  });
+}
+```
+
+#### 📚 API Reference
 
 ##### `new PromiseConcurrentExecutor(concurrency?: number, options?: PromiseConcurrentExecutorOption)`
 
@@ -249,11 +295,11 @@ Sets a new maximum parallel execution limit.
 
 Returns the number of functions currently in the queue.
 
-## 📜 License
+#### 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](https://opensource.org/licenses/MIT) file for details.
 
-## 🎓 Advanced Usage & Examples
+#### 🎓 Advanced Usage & Examples
 
 This README covers the basic setup and primary usage of the library. For more advanced use cases and a comprehensive look at all features, the test suite serves as practical and up-to-date documentation.
 
